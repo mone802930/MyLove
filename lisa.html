@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Lisa 🤍</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #fdf6ee;
+    --blush: #f2c4ce;
+    --rose: #d4788a;
+    --deep: #7a3048;
+    --soft: #f9e8ec;
+    --text: #3a1a24;
+    --muted: #9c6070;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--text);
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ── FLOATING PETALS ── */
+  .petal {
+    position: fixed;
+    font-size: 1.2rem;
+    opacity: 0;
+    animation: fall linear infinite;
+    pointer-events: none;
+    z-index: 999;
+  }
+  @keyframes fall {
+    0%   { transform: translateY(-40px) rotate(0deg); opacity: 0.7; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+    background: radial-gradient(ellipse at 60% 40%, #fce8ef 0%, var(--cream) 70%);
+  }
+
+  .hero-tag {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.1rem;
+    color: var(--rose);
+    letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 12vw, 7rem);
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--deep);
+    opacity: 0;
+    animation: fadeUp 1s ease 0.6s forwards;
+  }
+
+  .hero-title span {
+    font-style: italic;
+    color: var(--rose);
+  }
+
+  .hero-sub {
+    margin-top: 1.4rem;
+    font-size: 1rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.9s forwards;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.5s forwards;
+  }
+
+  .scroll-hint::after {
+    content: '';
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--rose), transparent);
+    animation: lineGrow 1.5s ease 2s infinite;
+  }
+
+  @keyframes lineGrow {
+    0%, 100% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+    50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SECTION COMMON ── */
+  section {
+    padding: 6rem 1.5rem;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1rem;
+    color: var(--rose);
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 700;
+    color: var(--deep);
+    line-height: 1.2;
+    margin-bottom: 2rem;
+  }
+
+  .section-title em { font-style: italic; color: var(--rose); }
+
+  /* ── REVEAL ON SCROLL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── TIMELINE ── */
+  #memories {
+    background: var(--soft);
+    max-width: 100%;
+    padding: 6rem 1.5rem;
+  }
+
+  #memories .inner {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+    margin-top: 1rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--blush), transparent);
+  }
+
+  .tl-item {
+    position: relative;
+    margin-bottom: 3rem;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .tl-item.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .tl-dot {
+    position: absolute;
+    left: -2.4rem;
+    top: 0.3rem;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--rose);
+    border: 3px solid var(--cream);
+    box-shadow: 0 0 0 2px var(--blush);
+  }
+
+  .tl-emoji {
+    font-size: 1.6rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .tl-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--deep);
+    margin-bottom: 0.4rem;
+  }
+
+  .tl-text {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--muted);
+  }
+
+  /* ── REASONS ── */
+  .reasons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.2rem;
+    margin-top: 1rem;
+  }
+
+  .reason-card {
+    background: white;
+    border: 1px solid #f0dce2;
+    border-radius: 16px;
+    padding: 1.4rem 1.2rem;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    box-shadow: 0 4px 20px rgba(212,120,138,0.07);
+  }
+
+  .reason-card.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .reason-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 8px 30px rgba(212,120,138,0.15);
+    transition: all 0.3s ease;
+  }
+
+  .reason-icon { font-size: 1.6rem; margin-bottom: 0.6rem; }
+
+  .reason-text {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  .reason-text strong {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--deep);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  /* ── LETTER ── */
+  #letter {
+    background: radial-gradient(ellipse at 30% 70%, #fce8ef 0%, var(--cream) 65%);
+    max-width: 100%;
+    padding: 6rem 1.5rem;
+  }
+
+  #letter .inner {
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  .letter-body {
+    background: white;
+    border: 1px solid #f0dce2;
+    border-radius: 20px;
+    padding: 2.8rem 2.2rem;
+    box-shadow: 0 8px 40px rgba(212,120,138,0.1);
+    font-size: 1rem;
+    line-height: 1.9;
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .letter-body::before {
+    content: '❝';
+    position: absolute;
+    top: 1rem;
+    left: 1.4rem;
+    font-size: 5rem;
+    color: var(--blush);
+    font-family: 'Playfair Display', serif;
+    line-height: 1;
+    opacity: 0.5;
+  }
+
+  .letter-body p { margin-bottom: 1.2rem; }
+
+  .letter-body .sign {
+    margin-top: 2rem;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.5rem;
+    color: var(--rose);
+  }
+
+  /* ── SONG ── */
+  .song-block {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    background: var(--deep);
+    color: white;
+    border-radius: 16px;
+    padding: 1.4rem 1.6rem;
+    margin-top: 2rem;
+  }
+
+  .song-icon {
+    font-size: 2.5rem;
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.12); }
+  }
+
+  .song-info { flex: 1; }
+  .song-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+  .song-artist { font-size: 0.8rem; color: var(--blush); margin-top: 0.2rem; }
+
+  /* ── FINAL ── */
+  #finale {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 1.5rem;
+    background: var(--deep);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #finale::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, rgba(242,196,206,0.15) 0%, transparent 70%);
+  }
+
+  .finale-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  .finale-title em { color: var(--blush); font-style: italic; }
+
+  .finale-sub {
+    margin-top: 1.2rem;
+    font-size: 1rem;
+    color: var(--blush);
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.7s forwards;
+  }
+
+  .hearts {
+    margin-top: 2rem;
+    font-size: 2rem;
+    letter-spacing: 0.4rem;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 1s ease 1s forwards;
+  }
+
+  .song-section {
+    margin-top: 2rem;
+  }
+
+  .song-label {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.1rem;
+    color: var(--rose);
+    margin-bottom: 0.8rem;
+  }
+
+  .yt-wrap {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(212,120,138,0.2);
+  }
+
+  .yt-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .fake-player {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    background: var(--deep);
+    border-radius: 16px;
+    padding: 1.2rem 1.4rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 20px rgba(122,48,72,0.25);
+  }
+
+  .fake-player:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(122,48,72,0.35);
+  }
+
+  .fp-play {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--blush);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--deep);
+    font-size: 1rem;
+    flex-shrink: 0;
+    animation: pulse 2s ease infinite;
+  }
+
+  .fp-info { flex: 1; }
+
+  .fp-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    color: white;
+    margin-bottom: 0.2rem;
+  }
+
+  .fp-artist {
+    font-size: 0.75rem;
+    color: var(--blush);
+    margin-bottom: 0.6rem;
+  }
+
+  .fp-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .fp-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--blush);
+    border-radius: 2px;
+    animation: progress 3s ease infinite;
+  }
+
+  @keyframes progress {
+    0%   { width: 0%; }
+    100% { width: 100%; }
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    text-align: center;
+    color: var(--blush);
+    font-size: 1.4rem;
+    letter-spacing: 0.6rem;
+    margin: 1rem 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating petals -->
+<script>
+  const emojis = ['🌸','🌷','✨','🍀','💗'];
+  for (let i = 0; i < 14; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.fontSize = (0.7 + Math.random() * 1) + 'rem';
+    p.style.animationDuration = (6 + Math.random() * 10) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    document.body.appendChild(p);
+  }
+</script>
+
+<!-- HERO -->
+<div id="hero">
+  <p class="hero-tag">a little something for you 🤍</p>
+  <h1 class="hero-title">Hey, <span>Lisa.</span></h1>
+  <p class="hero-sub">From Utsab — with everything I've got</p>
+  <div class="scroll-hint">scroll</div>
+</div>
+
+<!-- MEMORIES -->
+<div id="memories">
+  <div class="inner">
+    <span class="section-label reveal">our story so far</span>
+    <h2 class="section-title reveal">Moments I <em>replay</em><br>all the time</h2>
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-emoji">🫂</div>
+        <div class="tl-title">The First Meeting — and your sneaky hand</div>
+        <div class="tl-text">We were surrounded by people and neither of us was saying much. Then you grabbed my hand — acting like the crowd was scary, like you needed someone to hold onto. I knew exactly what you were doing. But I didn't say a word. I just let it happen, let you lead, let that moment be exactly what it was. It was the smartest thing you ever did and I'm glad I was smart enough to just shut up and enjoy it.</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-emoji">📝</div>
+        <div class="tl-title">The Dare You Actually Took Seriously 😆</div>
+        <div class="tl-text">I dared you to write me a poem. Honestly I half expected you to just refuse or send something silly. But you actually did it — properly, genuinely, like you'd been thinking about it for a while. I gave you a dare and you turned it into something I still think about. That says everything about you.</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-emoji">🎮</div>
+        <div class="tl-title">When You Actually Got on Mic</div>
+        <div class="tl-text">You don't usually turn your mic on. That's just your thing. But the rare times you did — those games became something else entirely. It wasn't even about winning anymore. Just your voice in my ears while we played made everything feel different. Warmer. Like the game was just an excuse to be in the same space as you.</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-emoji">🌙</div>
+        <div class="tl-title">When You Were Just… There</div>
+        <div class="tl-text">You didn't call. You didn't voice message. You just stayed in the chat — quietly, patiently — while I fell apart. And somehow that was everything. I don't know how to explain it but your silence felt louder than anything anyone's ever said to me. It felt like you were right there, holding me, letting me cry without making me feel small for it. That kind of presence is rare. You didn't try to fix it. You just stayed. That's the part I'll never forget.</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-emoji">🎵</div>
+        <div class="tl-title">When You Sang for Me</div>
+        <div class="tl-text">Your voice. That's it. That's the whole memory. I don't know if you know what it does to a person — hearing someone they care about just… sing for them. It felt like a gift I didn't ask for but needed more than anything.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- REASONS -->
+<section id="reasons">
+  <span class="section-label reveal">why you're it for me</span>
+  <h2 class="section-title reveal">Things I love about <em>you</em></h2>
+  <div class="reasons-grid">
+    <div class="reason-card">
+      <div class="reason-icon">🫀</div>
+      <div class="reason-text"><strong>Your emotional strength</strong>You show up for people in a way most can't. You held me when I was breaking and you didn't flinch. That's rare.</div>
+    </div>
+    <div class="reason-card">
+      <div class="reason-icon">😤</div>
+      <div class="reason-text"><strong>You let me rage bait you</strong>The fact that you actually react makes it 10x funnier. You could ignore me but you don't and honestly that's love.</div>
+    </div>
+    <div class="reason-card">
+      <div class="reason-icon">🎤</div>
+      <div class="reason-text"><strong>Your voice</strong>I don't have words for this one. It just does something to me. Every time.</div>
+    </div>
+    <div class="reason-card">
+      <div class="reason-icon">🌸</div>
+      <div class="reason-text"><strong>Your whole vibe</strong>Gentle. Kind. A little childlike in the best way. You make everything feel softer just by being in it.</div>
+    </div>
+    <div class="reason-card">
+      <div class="reason-icon">👑</div>
+      <div class="reason-text"><strong>How you carry the relationship</strong>You're the responsible one. The patient one. The mummy energy in this whole thing. I'd be lost without it honestly.</div>
+    </div>
+    <div class="reason-card">
+      <div class="reason-icon">🤭</div>
+      <div class="reason-text"><strong>The way you bully me (nicely)</strong>It's the funniest thing. You're so gentle with the world but with me you've got jokes. I love that I get that side of you.</div>
+    </div>
+    <div class="reason-card">
+      <div class="reason-icon">😭</div>
+      <div class="reason-text"><strong>Your sticker collection (used against me)</strong>You have a whole arsenal of funny stickers and you deploy them specifically to destroy me. It's calculated. It's evil. I respect it deeply.</div>
+    </div>
+  </div>
+</section>
+
+<!-- LETTER -->
+<div id="letter">
+  <div class="inner">
+    <span class="section-label reveal">from me to you</span>
+    <h2 class="section-title reveal">A letter I should've<br>written <em>sooner</em></h2>
+    <div class="letter-body reveal">
+      <p>Hey babydoll,</p>
+      <p>I'm not the best at saying this stuff out loud so I figured I'd write it down where I can't stumble over my words.</p>
+      <p>Since October — since before we were even official — you've been something I didn't know I needed. The hand hold at the first meet when neither of us could even talk properly. The poem you wrote me like it was nothing. The voice calls, the games, the nights I fell apart and you just… stayed.</p>
+      <p>You've got this way of making me feel completely safe without ever making a big deal out of it. That's not easy. Most people don't know how to do that. You just do.</p>
+      <p>February 25th didn't change everything — it just made official what I think I already knew. That you're my person. The patient one, the gentle one, the one who sings for me and roasts me in the same breath.</p>
+      <p>I know the distance is hard. I know it's not easy loving someone through a screen. But every day I'm grateful it's you on the other side of it.</p>
+      <p>This is your surprise. Not a thing — just everything I feel, finally written down.</p>
+      <p class="sign">Always yours, Utsab 🤍</p>
+    </div>
+
+    <div class="song-section reveal">
+      <div class="song-label">🎵 play this while you read the letter above 🤍</div>
+      <div class="fake-player" onclick="window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ','_blank')">
+        <div class="fp-left">
+          <div class="fp-play">▶</div>
+        </div>
+        <div class="fp-info">
+          <div class="fp-title">A song just for you 🤍</div>
+          <div class="fp-artist">by Utsab — tap to play</div>
+          <div class="fp-bar"><div class="fp-fill"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FINALE -->
+<div id="finale">
+  <h2 class="finale-title">You're my<br><em>favourite person.</em></h2>
+  <p class="finale-sub">Official since 25th February 2026 — and every day before that too</p>
+  <div class="hearts">🤍 🌸 🤍</div>
+</div>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        // stagger children if grid
+        const cards = e.target.querySelectorAll('.reason-card, .tl-item');
+        cards.forEach((c, i) => {
+          setTimeout(() => c.classList.add('visible'), i * 120);
+        });
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal, .reason-card, .tl-item, .letter-body, .song-block').forEach(el => {
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
